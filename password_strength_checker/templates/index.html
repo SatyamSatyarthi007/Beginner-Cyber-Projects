@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Strength Checker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .input-container {
+            margin: 30px 0;
+        }
+
+        .password-input-wrapper {
+            position: relative;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .password-input {
+            flex: 1;
+            padding: 15px 20px;
+            font-size: 18px;
+            font-family: 'Courier New', monospace;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .password-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .check-button {
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .check-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .check-button:active {
+            transform: translateY(0);
+        }
+
+        .check-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result-container {
+            margin-top: 30px;
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .result-container.show {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .strength-label {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            transition: color 0.3s ease;
+        }
+
+        .strength-percentage {
+            text-align: center;
+            font-size: 48px;
+            font-weight: bold;
+            margin: 20px 0;
+            transition: color 0.3s ease;
+        }
+
+        .strength-bar-container {
+            width: 100%;
+            height: 30px;
+            background-color: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: all 0.5s ease;
+            border-radius: 15px;
+            background: linear-gradient(90deg, #f44336 0%, #ff9800 50%, #4caf50 100%);
+            position: relative;
+        }
+
+        .strength-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .info-card {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            background: #eeeeee;
+            transform: translateY(-2px);
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .criteria-list {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 10px;
+        }
+
+        .criteria-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+
+        .criteria-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .criteria-icon.valid {
+            background: #4caf50;
+            color: white;
+        }
+
+        .criteria-icon.invalid {
+            background: #e0e0e0;
+            color: #999;
+        }
+
+        .error-message {
+            color: #f44336;
+            background-color: #ffebee;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .password-input-wrapper {
+                flex-direction: column;
+            }
+
+            .check-button {
+                width: 100%;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔒 Password Strength Checker</h1>
+        <p class="subtitle">Enter your password to check its strength and security</p>
+        
+        <div class="input-container">
+            <div class="password-input-wrapper">
+                <input 
+                    type="password" 
+                    id="passwordInput" 
+                    class="password-input" 
+                    placeholder="Enter your password..."
+                    autocomplete="off"
+                >
+                <button class="check-button" id="checkButton" onclick="checkPassword()">
+                    Check Strength
+                </button>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        <div class="error-message" id="errorMessage"></div>
+        
+        <!-- Loading Spinner -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Analyzing password...</p>
+        </div>
+
+        <!-- Results -->
+        <div class="result-container" id="resultContainer">
+            <div class="strength-label" id="strengthLabel">-</div>
+            <div class="strength-percentage" id="strengthPercentage">0%</div>
+            
+            <div class="strength-bar-container">
+                <div class="strength-bar" id="strengthBar"></div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="info-label">Length</div>
+                    <div class="info-value" id="passwordLength">0</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Character Types</div>
+                    <div class="info-value" id="characterTypes">0/4</div>
+                </div>
+            </div>
+
+            <div class="criteria-list">
+                <div class="criteria-item">
+                    <div class="criteria-icon invalid" id="lowerIcon">✗</div>
+                    <span>Contains lowercase letters (a-z)</span>
+                </div>
+                <div class="criteria-item">
+                    <div class="criteria-icon invalid" id="upperIcon">✗</div>
+                    <span>Contains uppercase letters (A-Z)</span>
+                </div>
+                <div class="criteria-item">
+                    <div class="criteria-icon invalid" id="digitIcon">✗</div>
+                    <span>Contains numbers (0-9)</span>
+                </div>
+                <div class="criteria-item">
+                    <div class="criteria-icon invalid" id="specialIcon">✗</div>
+                    <span>Contains special characters (!@#$...)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Allow Enter key to trigger check
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+
+        // Real-time checking on input (optional - can be removed if you only want button click)
+        // document.getElementById('passwordInput').addEventListener('input', function() {
+        //     const password = this.value;
+        //     if (password.length > 0) {
+        //         checkPassword();
+        //     }
+        // });
+
+        function checkPassword() {
+            const password = document.getElementById('passwordInput').value;
+            const checkButton = document.getElementById('checkButton');
+            const loading = document.getElementById('loading');
+            const errorMessage = document.getElementById('errorMessage');
+            const resultContainer = document.getElementById('resultContainer');
+
+            // Hide previous results and errors
+            resultContainer.classList.remove('show');
+            errorMessage.classList.remove('show');
+            hideError();
+
+            // Show loading
+            loading.classList.add('show');
+            checkButton.disabled = true;
+
+            // Make API call
+            fetch('/check', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    password: password
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                loading.classList.remove('show');
+                checkButton.disabled = false;
+
+                if (data.error) {
+                    showError(data.error);
+                } else if (data.success) {
+                    displayResults(data);
+                }
+            })
+            .catch(error => {
+                loading.classList.remove('show');
+                checkButton.disabled = false;
+                showError('An error occurred while checking the password. Please try again.');
+                console.error('Error:', error);
+            });
+        }
+
+        function displayResults(data) {
+            const resultContainer = document.getElementById('resultContainer');
+            const strengthLabel = document.getElementById('strengthLabel');
+            const strengthPercentage = document.getElementById('strengthPercentage');
+            const strengthBar = document.getElementById('strengthBar');
+            const passwordLength = document.getElementById('passwordLength');
+            const characterTypes = document.getElementById('characterTypes');
+
+            // Update strength label and percentage
+            strengthLabel.textContent = data.label;
+            strengthLabel.style.color = data.color;
+            strengthPercentage.textContent = data.percentage + '%';
+            strengthPercentage.style.color = data.color;
+
+            // Update strength bar
+            strengthBar.style.width = data.percentage + '%';
+            strengthBar.style.background = `linear-gradient(90deg, ${getColorForPercentage(0)} 0%, ${getColorForPercentage(50)} 50%, ${getColorForPercentage(100)} 100%)`;
+
+            // Update info cards
+            passwordLength.textContent = data.length;
+            
+            const typeCount = [data.has_lower, data.has_upper, data.has_digit, data.has_special].filter(Boolean).length;
+            characterTypes.textContent = `${typeCount}/4`;
+
+            // Update criteria icons
+            updateCriteriaIcon('lowerIcon', data.has_lower);
+            updateCriteriaIcon('upperIcon', data.has_upper);
+            updateCriteriaIcon('digitIcon', data.has_digit);
+            updateCriteriaIcon('specialIcon', data.has_special);
+
+            // Show results
+            resultContainer.classList.add('show');
+        }
+
+        function updateCriteriaIcon(iconId, isValid) {
+            const icon = document.getElementById(iconId);
+            if (isValid) {
+                icon.classList.remove('invalid');
+                icon.classList.add('valid');
+                icon.textContent = '✓';
+            } else {
+                icon.classList.remove('valid');
+                icon.classList.add('invalid');
+                icon.textContent = '✗';
+            }
+        }
+
+        function getColorForPercentage(percentage) {
+            if (percentage >= 80) return '#4caf50';
+            if (percentage >= 60) return '#8bc34a';
+            if (percentage >= 40) return '#ff9800';
+            if (percentage >= 20) return '#ff5722';
+            return '#f44336';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+        }
+
+        function hideError() {
+            document.getElementById('errorMessage').classList.remove('show');
+        }
+    </script>
+</body>
+</html>

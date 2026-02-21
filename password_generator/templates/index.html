@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 32px;
+        }
+
+        .question {
+            text-align: center;
+            color: #555;
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        .options-container {
+            margin: 30px 0;
+        }
+
+        .option-group {
+            margin: 15px 0;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .option-group:hover {
+            border-color: #667eea;
+            background-color: #f5f5ff;
+        }
+
+        .option-group.selected {
+            border-color: #667eea;
+            background-color: #f5f5ff;
+        }
+
+        .option-group input[type="radio"],
+        .option-group input[type="checkbox"] {
+            margin-right: 10px;
+            cursor: pointer;
+            transform: scale(1.2);
+        }
+
+        .option-group label {
+            cursor: pointer;
+            font-size: 16px;
+            color: #333;
+            user-select: none;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-secondary {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #da190b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4);
+        }
+
+        .btn-info {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background-color: #0b7dda;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
+        }
+
+        .btn-warning {
+            background-color: #FF9800;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background-color: #e68900;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.4);
+        }
+
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        .password-display {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .password-box {
+            background-color: #f5f5f5;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-size: 24px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            color: #333;
+            word-break: break-all;
+            position: relative;
+        }
+
+        .success-message {
+            color: #4CAF50;
+            font-size: 18px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .error-message {
+            color: #f44336;
+            background-color: #ffebee;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .copy-btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .password-input-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .password-input {
+            flex: 1;
+            padding: 15px;
+            font-size: 18px;
+            font-family: 'Courier New', monospace;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            max-width: 400px;
+        }
+
+        .input-group {
+            margin: 20px 0;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .input-group .optional {
+            color: #999;
+            font-size: 12px;
+            font-weight: normal;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Password Generator</h1>
+        
+        <!-- Error Message -->
+        <div class="error-message" id="errorMessage"></div>
+        
+        <!-- Loading Spinner -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Generating password...</p>
+        </div>
+
+        <!-- Step 1: Mode Selection -->
+        <div class="step active" id="step1">
+            <p class="question">How would you like to generate your password?</p>
+            <div class="options-container">
+                <div class="option-group" onclick="selectMode('custom')">
+                    <input type="radio" id="custom" name="mode" value="custom">
+                    <label for="custom">Provide custom information (choose difficulty & character types)</label>
+                </div>
+                <div class="option-group" onclick="selectMode('automatic')">
+                    <input type="radio" id="automatic" name="mode" value="automatic">
+                    <label for="automatic">Generate automatically (recommended settings)</label>
+                </div>
+            </div>
+            <div class="button-container">
+                <button class="btn-primary" onclick="proceedFromMode()">Next</button>
+            </div>
+        </div>
+
+        <!-- Step 2: Difficulty Selection (for both modes) -->
+        <div class="step" id="step2">
+            <p class="question">What type of password do you want?</p>
+            <div class="options-container">
+                <div class="option-group">
+                    <input type="radio" id="easy" name="difficulty" value="easy">
+                    <label for="easy">Easy (8 characters)</label>
+                </div>
+                <div class="option-group">
+                    <input type="radio" id="medium" name="difficulty" value="medium">
+                    <label for="medium">Medium (12 characters)</label>
+                </div>
+                <div class="option-group">
+                    <input type="radio" id="hard" name="difficulty" value="hard">
+                    <label for="hard">Hard (16 characters)</label>
+                </div>
+            </div>
+            <div class="button-container">
+                <button class="btn-secondary" onclick="goToStep1()">Back</button>
+                <button class="btn-primary" onclick="proceedFromDifficulty()">Next</button>
+            </div>
+        </div>
+
+        <!-- Step 3: Character Types Selection (custom mode only) -->
+        <div class="step" id="step3">
+            <p class="question">What types of characters should the password consist of?</p>
+            <div class="options-container">
+                <div class="option-group">
+                    <input type="checkbox" id="alphabets" name="charTypes" value="alphabets" checked>
+                    <label for="alphabets">Alphabets (a-z, A-Z)</label>
+                </div>
+                <div class="option-group">
+                    <input type="checkbox" id="numerical" name="charTypes" value="numerical">
+                    <label for="numerical">Numerical (0-9)</label>
+                </div>
+                <div class="option-group">
+                    <input type="checkbox" id="symbols" name="charTypes" value="symbols">
+                    <label for="symbols">Symbols (!@#$%...)</label>
+                </div>
+            </div>
+            <div class="button-container">
+                <button class="btn-secondary" onclick="goToStep2()">Back</button>
+                <button class="btn-primary" onclick="goToStep4()">Next</button>
+            </div>
+        </div>
+
+        <!-- Step 4: Custom Information (custom mode only) -->
+        <div class="step" id="step4">
+            <p class="question">Provide custom information (optional)</p>
+            <p style="text-align: center; color: #999; font-size: 14px; margin-bottom: 20px;">
+                You can leave any or all fields empty. The password will include your provided information and add random characters to make it strong.
+            </p>
+            <div class="input-group">
+                <label for="customName">Name <span class="optional">(optional)</span></label>
+                <input type="text" id="customName" placeholder="Enter a name or word">
+            </div>
+            <div class="input-group">
+                <label for="customNumber">Number <span class="optional">(optional)</span></label>
+                <input type="text" id="customNumber" placeholder="Enter a number">
+            </div>
+            <div class="input-group">
+                <label for="customSymbol">Symbol <span class="optional">(optional)</span></label>
+                <input type="text" id="customSymbol" placeholder="Enter a symbol (e.g., !, @, #)">
+            </div>
+            <div class="button-container">
+                <button class="btn-secondary" onclick="goToStep3()">Back</button>
+                <button class="btn-primary" onclick="generatePassword()">Generate Password</button>
+            </div>
+        </div>
+
+        <!-- Step 5: Password Display -->
+        <div class="step" id="step5">
+            <p class="success-message">Your password has been generated!</p>
+            <div class="password-display">
+                <p style="margin-bottom: 10px; font-size: 16px; color: #555;">Generated Password:</p>
+                <div class="password-input-container">
+                    <input type="text" class="password-input" id="passwordOutput" readonly>
+                    <button class="btn-info" onclick="copyPassword()">Copy</button>
+                </div>
+            </div>
+            <div class="button-container">
+                <button class="btn-primary" onclick="generateNewPassword()">Generate New Password</button>
+                <button class="btn-warning" onclick="startOver()">Start Over</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentMode = '';
+        let currentDifficulty = '';
+        let currentCharTypes = {
+            include_alphabets: true,
+            include_numerical: false,
+            include_symbols: false
+        };
+        let currentCustomInputs = {
+            custom_name: '',
+            custom_number: '',
+            custom_symbol: ''
+        };
+
+        function showStep(stepNumber) {
+            // Hide all steps
+            document.querySelectorAll('.step').forEach(step => {
+                step.classList.remove('active');
+            });
+            
+            // Show selected step
+            document.getElementById(`step${stepNumber}`).classList.add('active');
+            
+            // Hide error message
+            hideError();
+        }
+
+        function selectMode(mode) {
+            const radio = document.getElementById(mode);
+            radio.checked = true;
+            currentMode = mode;
+            
+            // Update visual selection
+            document.querySelectorAll('.option-group').forEach(group => {
+                group.classList.remove('selected');
+            });
+            radio.closest('.option-group').classList.add('selected');
+        }
+
+        // Add event listeners for radio buttons to update visual state
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('input[name="mode"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.checked) {
+                        document.querySelectorAll('.option-group').forEach(group => {
+                            group.classList.remove('selected');
+                        });
+                        this.closest('.option-group').classList.add('selected');
+                    }
+                });
+            });
+        });
+
+        function proceedFromMode() {
+            const selectedMode = document.querySelector('input[name="mode"]:checked');
+            
+            if (!selectedMode) {
+                showError('Please select an option!');
+                return;
+            }
+            
+            currentMode = selectedMode.value;
+            
+            // Both modes go to difficulty selection first
+            showStep(2);
+        }
+
+        function proceedFromDifficulty() {
+            const selectedDifficulty = document.querySelector('input[name="difficulty"]:checked');
+            
+            if (!selectedDifficulty) {
+                showError('Please select a difficulty level!');
+                return;
+            }
+            
+            currentDifficulty = selectedDifficulty.value;
+            
+            if (currentMode === 'automatic') {
+                // Generate password automatically with all character types
+                generateAutomaticPassword();
+            } else {
+                // Go to character types selection for custom mode
+                showStep(3);
+            }
+        }
+
+        function generateAutomaticPassword() {
+            // Use all character types for automatic mode
+            currentCharTypes = {
+                include_alphabets: true,
+                include_numerical: true,
+                include_symbols: true
+            };
+            
+            // No custom inputs for automatic mode
+            currentCustomInputs = {
+                custom_name: '',
+                custom_number: '',
+                custom_symbol: ''
+            };
+            
+            // Show loading
+            document.getElementById('loading').classList.add('show');
+            hideError();
+            
+            // Make API call
+            fetch('/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    difficulty: currentDifficulty,
+                    ...currentCharTypes,
+                    ...currentCustomInputs
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loading').classList.remove('show');
+                
+                if (data.error) {
+                    showError(data.error);
+                } else if (data.success) {
+                    document.getElementById('passwordOutput').value = data.password;
+                    showStep(5);
+                }
+            })
+            .catch(error => {
+                document.getElementById('loading').classList.remove('show');
+                showError('An error occurred while generating the password. Please try again.');
+                console.error('Error:', error);
+            });
+        }
+
+        function goToStep1() {
+            showStep(1);
+        }
+
+        function goToStep2() {
+            showStep(2);
+        }
+
+        function goToStep3() {
+            showStep(3);
+        }
+
+        function goToStep4() {
+            // Get selected character types
+            const alphabets = document.getElementById('alphabets').checked;
+            const numerical = document.getElementById('numerical').checked;
+            const symbols = document.getElementById('symbols').checked;
+            
+            if (!alphabets && !numerical && !symbols) {
+                showError('Please select at least one character type!');
+                return;
+            }
+            
+            // Store current selections
+            currentCharTypes = {
+                include_alphabets: alphabets,
+                include_numerical: numerical,
+                include_symbols: symbols
+            };
+            
+            showStep(4);
+        }
+
+        function generatePassword() {
+            // Get custom inputs (optional)
+            const customName = document.getElementById('customName').value.trim();
+            const customNumber = document.getElementById('customNumber').value.trim();
+            const customSymbol = document.getElementById('customSymbol').value.trim();
+            
+            // Store custom inputs
+            currentCustomInputs = {
+                custom_name: customName,
+                custom_number: customNumber,
+                custom_symbol: customSymbol
+            };
+            
+            // Show loading
+            document.getElementById('loading').classList.add('show');
+            hideError();
+            
+            // Make API call
+            fetch('/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    difficulty: currentDifficulty,
+                    ...currentCharTypes,
+                    ...currentCustomInputs
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loading').classList.remove('show');
+                
+                if (data.error) {
+                    showError(data.error);
+                } else if (data.success) {
+                    document.getElementById('passwordOutput').value = data.password;
+                    showStep(5);
+                }
+            })
+            .catch(error => {
+                document.getElementById('loading').classList.remove('show');
+                showError('An error occurred while generating the password. Please try again.');
+                console.error('Error:', error);
+            });
+        }
+
+        function generateNewPassword() {
+            // Generate new password with same settings
+            document.getElementById('loading').classList.add('show');
+            hideError();
+            
+            fetch('/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    difficulty: currentDifficulty,
+                    ...currentCharTypes,
+                    ...currentCustomInputs
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loading').classList.remove('show');
+                
+                if (data.error) {
+                    showError(data.error);
+                } else if (data.success) {
+                    document.getElementById('passwordOutput').value = data.password;
+                }
+            })
+            .catch(error => {
+                document.getElementById('loading').classList.remove('show');
+                showError('An error occurred while generating the password. Please try again.');
+                console.error('Error:', error);
+            });
+        }
+
+        function copyPassword() {
+            const passwordInput = document.getElementById('passwordOutput');
+            passwordInput.select();
+            passwordInput.setSelectionRange(0, 99999); // For mobile devices
+            
+            try {
+                document.execCommand('copy');
+                
+                // Show temporary success message
+                const copyBtn = event.target;
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = 'Copied!';
+                copyBtn.style.backgroundColor = '#4CAF50';
+                
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                    copyBtn.style.backgroundColor = '#2196F3';
+                }, 2000);
+            } catch (err) {
+                showError('Failed to copy password. Please select and copy manually.');
+            }
+        }
+
+        function startOver() {
+            // Reset form
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.checked = false;
+            });
+            
+            document.getElementById('alphabets').checked = true;
+            document.getElementById('numerical').checked = false;
+            document.getElementById('symbols').checked = false;
+            
+            // Clear custom inputs
+            document.getElementById('customName').value = '';
+            document.getElementById('customNumber').value = '';
+            document.getElementById('customSymbol').value = '';
+            
+            currentMode = '';
+            currentDifficulty = '';
+            currentCharTypes = {
+                include_alphabets: true,
+                include_numerical: false,
+                include_symbols: false
+            };
+            currentCustomInputs = {
+                custom_name: '',
+                custom_number: '',
+                custom_symbol: ''
+            };
+            
+            showStep(1);
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+        }
+
+        function hideError() {
+            document.getElementById('errorMessage').classList.remove('show');
+        }
+    </script>
+</body>
+</html>
