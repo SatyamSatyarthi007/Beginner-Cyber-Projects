@@ -1,29 +1,50 @@
-# Basic Network Scanner
+# 🌐 Basic Network Scanner – Educational Project
 
-Identifies active devices on a network and gathers basic network information.
+> A simple and beginner-friendly network scanner that identifies active devices on a local network and gathers basic network information.
 
-## Features
-- Scans network range for active hosts
-- Displays IP addresses and MAC addresses
-- Shows hostname information when available
-- Fast concurrent scanning
+---
 
-## Requirements
-- Python 3.x
-- Root/Administrator privileges (for ARP scanning)
+## 📌 What is a Network Scanner?
 
-## Installation
+A **network scanner** is a tool used to discover devices connected to a network. It helps identify:
+
+- Active hosts
+- IP addresses
+- MAC addresses
+- Hostnames (when available)
+
+Network scanners are commonly used for:
+
+- 🛠️ Network troubleshooting  
+- 🔐 Security auditing  
+- 🧪 Cybersecurity education  
+- 🏢 IT infrastructure management  
+
+This project is designed for **learning and ethical security testing only**.
+
+---
+
+## ✨ Features
+
+- 🔎 Scans a network range for active hosts  
+- 🌍 Displays IP addresses  
+- 🧾 Shows MAC addresses  
+- 🖥️ Retrieves hostname information (when available)  
+- ⚡ Fast concurrent scanning for improved performance  
+- 📚 Clean, easy-to-understand Python code  
+
+---
+
+## 📦 Requirements
+
+- Python **3.x**
+- Root / Administrator privileges (required for ARP scanning)
+
+---
+
+## ⚙️ Installation
+
+Install dependencies:
+
 ```bash
 pip install -r requirements.txt
-```
-
-## Usage
-```bash
-# Scan local network (auto-detect)
-sudo python3 network_scanner.py
-
-# Scan specific network range
-sudo python3 network_scanner.py 192.168.1.0/24
-```
-
-Note: Root privileges are required for ARP scanning on Linux/Mac.
