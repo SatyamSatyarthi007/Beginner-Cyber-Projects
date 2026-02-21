@@ -1,24 +1,52 @@
-# Simple Packet Sniffer
+# 📡 Simple Packet Sniffer – Educational Project
 
-A basic packet sniffer that captures and analyzes network packets to demonstrate how data flows across a network.
+> A beginner-friendly packet sniffer that captures and analyzes network traffic to demonstrate how data flows across a network.
 
-## Features
-- Captures network packets in real-time
-- Displays packet information (protocol, source, destination)
-- Analyzes TCP, UDP, and ICMP packets
+---
 
-## Requirements
-- Python 3.x
-- Root/Administrator privileges (required for raw socket access)
+## 📌 What is a Packet Sniffer?
 
-## Installation
+A **packet sniffer** is a tool that monitors and captures data packets traveling across a network.  
+It allows you to inspect:
+
+- Network protocols
+- Source and destination addresses
+- Packet structure and metadata
+
+Packet sniffers are commonly used for:
+
+- 🛠️ Network troubleshooting  
+- 🔐 Security monitoring  
+- 🧪 Cybersecurity education  
+- 🕵️ Traffic analysis and research  
+
+This project is designed strictly for **educational and ethical security learning**.
+
+---
+
+## ✨ Features
+
+- 📡 Captures network packets in real-time  
+- 🌍 Displays protocol, source IP, and destination IP  
+- 🔎 Analyzes:
+  - TCP packets  
+  - UDP packets  
+  - ICMP packets  
+- ⚡ Lightweight and easy-to-understand implementation  
+- 📚 Beginner-friendly code structure  
+
+---
+
+## 📦 Requirements
+
+- Python **3.x**
+- Root / Administrator privileges (required for raw socket access)
+
+---
+
+## ⚙️ Installation
+
+Install dependencies:
+
 ```bash
 pip install -r requirements.txt
-```
-
-## Usage
-```bash
-sudo python3 packet_sniffer.py
-```
-
-Note: On Linux, you need root privileges. On Windows, run as Administrator.
